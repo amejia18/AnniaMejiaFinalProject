@@ -8,10 +8,6 @@ The second variable (v80) is concerned with the level of agreement with the stat
 Looking at these two variables of interest provides valuable information about how these attitudes vary age, sex and education to inform policy making across Europe.
 
 This "European Values Study 2017 Data Explorer" dashboard has three sidebar tabs called:
-1. Overview
-2. Exploration
-3. Regression
-
 1. Overview: Summarizes the purpose of this dashboard in the 'About this app' section, explains the variables of interest in the 'Variables of interest' section, provides instructions on how to naviate this dashboard in the 'How to navigate' section, and explains the controls on the sidebar in the 'Side Bar Controls' section.
 2. Exploration: Shows distribution plots for the selected outcome and the three control variables: age, education, sex.
 3. Regression: Shows OLS coefficient table and residuals vs. fitted plot for chosen model
