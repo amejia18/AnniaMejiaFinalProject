@@ -25,6 +25,7 @@ knitr::opts_chunk$set(
   dpi = 120
 )
 
+library(haven)
 library(tidyverse)
 library(plotly)
 library(broom)
@@ -209,16 +210,15 @@ plot_residuals <- function(model) {
 ```
 
 ```{r ui}
-# UI
 ui <- dashboardPage(
   skin = "black",
-
+  
   # Header
   dashboardHeader(
     title = "EVS Data Explorer",
     titleWidth = 230
   ),
-
+  
   # Sidebar
   dashboardSidebar(
     width = 230,
@@ -230,50 +230,50 @@ ui <- dashboardPage(
     ),
     hr(),
     div(style = "padding: 0 15px;",
-
-      # Country (Visible on all tabs)
-      selectInput("country", label = tags$span(icon("globe"), " Country"),
-                  choices  = country_choices,
-                  selected = "overall"),
-
-      # Outcome (Visible on all tabs)
-      radioButtons("outcome", label = tags$span(icon("bullseye"), " Outcome variable"),
-                   choices = c(
-                     "Gender attitude (v72)"      = "v72",
-                     "Immigration attitude (v80)" = "v80"
-                   ),
-                   selected = "v72"),
-      
-      # REGRESSION-ONLY CONTROLS
-      # These only appear when the "Regression" tab is active
-      conditionalPanel(
-        condition = "input.sidebar == 'regression'",
+        
+        # Country (Visible on all tabs)
+        selectInput("country", label = tags$span(icon("globe"), " Country"),
+                    choices  = country_choices,
+                    selected = "overall"),
+        
+        # Outcome (Visible on all tabs)
+        radioButtons("outcome", label = tags$span(icon("bullseye"), " Outcome variable"),
+                     choices = c(
+                       "Gender attitude (v72)"      = "v72",
+                       "Immigration attitude (v80)" = "v80"
+                     ),
+                     selected = "v72"),
+        
+        # REGRESSION-ONLY CONTROLS
+        # These only appear when the "Regression" tab is active
+        conditionalPanel(
+          condition = "input.sidebar == 'regression'",
+          hr(),
+          checkboxGroupInput("controls",
+                             label = tags$span(icon("sliders-h"), " Additional controls"),
+                             choices  = c("Sex"       = "sex_f",
+                                          "Education" = "edu_f"),
+                             selected = NULL),
+          
+          numericInput("age_poly",
+                       label = tags$span(icon("superscript"), " Age polynomial degree"),
+                       value = 1, min = 1, max = 5, step = 1)
+        ),
+        
         hr(),
-        checkboxGroupInput("controls",
-                           label = tags$span(icon("sliders-h"), " Additional controls"),
-                           choices  = c("Sex"       = "sex_f",
-                                        "Education" = "edu_f"),
-                           selected = NULL),
-
-        numericInput("age_poly",
-                     label = tags$span(icon("superscript"), " Age polynomial degree"),
-                     value = 1, min = 1, max = 5, step = 1)
-      ),
-
-      hr(),
-
-      # Download report button
-      div(style = "padding: 0 5px;",
-          downloadButton("download_report", "Generate HTML Report",
-                         style = "width:100%; background-color:#4C6A92; 
+        
+        # Download report button
+        div(style = "padding: 0 5px;",
+            downloadButton("download_report", "Generate HTML Report",
+                           style = "width:100%; background-color:#4C6A92; 
                                   color:white; border:none; border-radius:4px;")
-      )
+        )
     )
   ),
-
+  
   # Body
   dashboardBody(
-
+    
     tags$head(tags$style(HTML("
       .content-wrapper { background-color: #F5F7FA; }
       .box { border-radius: 8px; border: none;
@@ -298,9 +298,9 @@ ui <- dashboardPage(
                     padding: 10px 14px; border-radius: 4px;
                     margin-bottom: 12px; font-size: 13px; }
     "))),
-
+    
     tabItems(
-
+      
       # TAB 1: OVERVIEW
       tabItem(
         tabName = "overview",
@@ -310,61 +310,61 @@ ui <- dashboardPage(
             title = tagList(icon("info-circle"), " Welcome to the EVS Data Explorer"),
             fluidRow(
               column(6,
-                h4("About this app", class = "intro"),
-                p("This interactive dashboard explores data from the",
-                  strong("European Values Study (EVS) 2017,"),
-                  "a large-scale cross-national survey examining values, beliefs,
+                     h4("About this app", class = "intro"),
+                     p("This interactive dashboard explores data from the",
+                       strong("European Values Study (EVS) 2017,"),
+                       "a large-scale cross-national survey examining values, beliefs,
                    and attitudes across Europe."),
-                p("This dashboard uses two variables of interest found in this EVS 2017 data set. The first variable (v72) is concerned with the level of agreement with the statement: Men should have more right to a job than women when jobs are scarce. The second variable (v80) is concerned with the level of agreement with the statement: Employers should give priority to nationals over immigrants when jobs are scarce. Looking at these two variables of interest provides valuable information about how these attitudes vary age, sex and education to inform policy making across Europe."),
-                br(),
-                h4("Variables of interest", class = "intro"),
-                tags$ul(
-                  tags$li(strong("v72 (Gender attitude):"),
-                          " This variable shows the level of agreement with the statement: Men                              should have more right to a job than women when jobs are scarce. 
+                     p("This dashboard uses two variables of interest found in this EVS 2017 data set. The first variable (v72) is concerned with the level of agreement with the statement: Men should have more right to a job than women when jobs are scarce. The second variable (v80) is concerned with the level of agreement with the statement: Employers should give priority to nationals over immigrants when jobs are scarce. Looking at these two variables of interest provides valuable information about how these attitudes vary age, sex and education to inform policy making across Europe."),
+                     br(),
+                     h4("Variables of interest", class = "intro"),
+                     tags$ul(
+                       tags$li(strong("v72 (Gender attitude):"),
+                               " This variable shows the level of agreement with the statement: Men                              should have more right to a job than women when jobs are scarce. 
                             (Variable Values Range: 1 = strongly agree, 5 = strongly                                        disagree)."),
-                  tags$li(strong("v80 (Immigration attitude):"),
-                          " This variable shows the level of agreement with the statement:  Employers should give priority to nationals over immigrants when jobs are scarce.
+                       tags$li(strong("v80 (Immigration attitude):"),
+                               " This variable shows the level of agreement with the statement:  Employers should give priority to nationals over immigrants when jobs are scarce.
                             (Variable Values Range: 1 = strongly agree, 5 = strongly                                        disagree).")
-                ),
-                br(),
-                p(icon("database"), strong(" Data source: "),
-                  "European Values Study 2017. GESIS Data Archive, ZA7500 v5.0.0. ",
-                  a("europeanvaluesstudy.eu", href = "https://europeanvaluesstudy.eu",
-                    target = "_blank"))
+                     ),
+                     br(),
+                     p(icon("database"), strong(" Data source: "),
+                       "European Values Study 2017. GESIS Data Archive, ZA7500 v5.0.0. ",
+                       a("europeanvaluesstudy.eu", href = "https://europeanvaluesstudy.eu",
+                         target = "_blank"))
               ),
               column(6,
-                h4("How to navigate", class = "intro"),
-                tags$ul(
-                  tags$li(icon("home"),       strong(" Overview:"),
-                          " Summarizes the purpose of this dashboard in the 'About this app' section, explains the variables of interest in the 'Variables of interest' section, provides instructions on how to naviate this dashboard in the 'How to navigate' section, and explains the controls on the sidebar in the 'Side Bar Controls' section."),
-                  tags$li(icon("search"),  strong(" Exploration:"),
-                          " Provides distribution plots for the selected outcome and the
+                     h4("How to navigate", class = "intro"),
+                     tags$ul(
+                       tags$li(icon("home"),       strong(" Overview:"),
+                               " Summarizes the purpose of this dashboard in the 'About this app' section, explains the variables of interest in the 'Variables of interest' section, provides instructions on how to naviate this dashboard in the 'How to navigate' section, and explains the controls on the sidebar in the 'Side Bar Controls' section."),
+                       tags$li(icon("search"),  strong(" Exploration:"),
+                               " Shows distribution plots for the selected outcome and the
                             three control variables: age, education, sex."),
-                  tags$li(icon("calculator"), strong(" Regression:"),
-                          " OLS coefficient table and residuals vs. fitted plot
-                            for your chosen model.")
-                ),
-                br(),
-                h4("Side Bar Controls", class = "intro"),
-                tags$table(class = "table table-bordered table-condensed",
-                  tags$thead(tags$tr(tags$th("Input"), tags$th("Output"))),
-                  tags$tbody(
-                    tags$tr(tags$td(icon("globe"),       " Country"),
-                            tags$td("Filter all outputs to one country, or keep 'Overall (all countries)'.")),
-                    tags$tr(tags$td(icon("bullseye"),    " Outcome"),
-                            tags$td("Switch between v72 and v80 across all tabs.")),
-                    tags$tr(tags$td(icon("sliders-h"),   " Controls"),
-                            tags$td("Add sex and/or education to the regression.")),
-                    tags$tr(tags$td(icon("superscript"), " Age poly."),
-                            tags$td("Set polynomial degree for age from 1 to 5)."))
-                  )
-                )
+                       tags$li(icon("calculator"), strong(" Regression:"),
+                               "Shows OLS coefficient table and residuals vs. fitted plot
+                            for chosen model.")
+                     ),
+                     br(),
+                     h4("Side Bar Controls", class = "intro"),
+                     tags$table(class = "table table-bordered table-condensed",
+                                tags$thead(tags$tr(tags$th("Input"), tags$th("Output"))),
+                                tags$tbody(
+                                  tags$tr(tags$td(icon("globe"),       " Country"),
+                                          tags$td("Filter all outputs to one country, or keep 'Overall (all countries)'.")),
+                                  tags$tr(tags$td(icon("bullseye"),    " Outcome"),
+                                          tags$td("Switch between v72 and v80 across all tabs.")),
+                                  tags$tr(tags$td(icon("sliders-h"),   " Controls"),
+                                          tags$td("Add sex and/or education to the regression.")),
+                                  tags$tr(tags$td(icon("superscript"), " Age poly."),
+                                          tags$td("Set polynomial degree for age from 1 to 5."))
+                                )
+                     )
               )
             )
           )
         )
       ),
-
+      
       # TAB 2: EXPLORATION
       tabItem(
         tabName = "exploration",
@@ -375,7 +375,8 @@ ui <- dashboardPage(
             div(class = "scale-note",
                 icon("info-circle"),
                 " All plots reflect the country selected in the left panel or side bar.
-                  Hover over the bars in the charts for exact values.")
+                  Hover over the bars in the charts for exact values. 
+                  Be sure to wait a couple of seconds for this page to load properly.")
           )
         ),
         # Outcome variable
@@ -399,7 +400,7 @@ ui <- dashboardPage(
               plotlyOutput("plot_sex", height = "260px"))
         )
       ),
-
+      
       # TAB 3: REGRESSION
       tabItem(
         tabName = "regression",
@@ -409,7 +410,8 @@ ui <- dashboardPage(
             title = tagList(icon("calculator"), " Regression Analysis"),
             div(class = "scale-note",
                 icon("info-circle"),
-                " OLS regression."),
+                " Shows OLS regression using variable controls and age polynomials selected.
+                  Be sure to wait a couple of seconds for this page to load properly."),
             strong("Current formula:"),
             verbatimTextOutput("formula_display")
           )
@@ -553,16 +555,22 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
+All of the above was copied into app.R after testing. The app was then deployed on shinyappsio using the connec-to-shiny chunk below. 
+
 ```{r session-info}
 sessionInfo()
 ```
 
-```{r connect-to-shiny, eval=FALSE, include=FALSE}
+```{r connect-to-shiny}
 ## Run this chunk to produce the rshiny app 
 rsconnect::deployApp(
-  appDir   = ".", 
-  appFiles = c("app.R", "evs_clean.rds"), 
-  appName  = "evs-data-explorer",
+  appDir = ".", 
+  appFiles = c(
+    "app.R", 
+    "evs_clean.rds", 
+    "dynamic_report.Rmd" 
+  ),
+  appName = "evs-data-explorer",
   forceUpdate = TRUE
 )
 ```

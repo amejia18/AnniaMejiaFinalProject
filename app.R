@@ -10,6 +10,7 @@
 #how these attitudes vary age, sex and education to inform policy making across Europe. 
 
 library(shiny)
+library(haven)
 library(shinydashboard)
 library(tidyverse)
 library(plotly)
@@ -285,11 +286,11 @@ ui <- dashboardPage(
                        tags$li(icon("home"),       strong(" Overview:"),
                                " Summarizes the purpose of this dashboard in the 'About this app' section, explains the variables of interest in the 'Variables of interest' section, provides instructions on how to naviate this dashboard in the 'How to navigate' section, and explains the controls on the sidebar in the 'Side Bar Controls' section."),
                        tags$li(icon("search"),  strong(" Exploration:"),
-                               " Provides distribution plots for the selected outcome and the
+                               " Shows distribution plots for the selected outcome and the
                             three control variables: age, education, sex."),
                        tags$li(icon("calculator"), strong(" Regression:"),
-                               " OLS coefficient table and residuals vs. fitted plot
-                            for your chosen model.")
+                               "Shows OLS coefficient table and residuals vs. fitted plot
+                            for chosen model.")
                      ),
                      br(),
                      h4("Side Bar Controls", class = "intro"),
@@ -303,7 +304,7 @@ ui <- dashboardPage(
                                   tags$tr(tags$td(icon("sliders-h"),   " Controls"),
                                           tags$td("Add sex and/or education to the regression.")),
                                   tags$tr(tags$td(icon("superscript"), " Age poly."),
-                                          tags$td("Set polynomial degree for age from 1 to 5)."))
+                                          tags$td("Set polynomial degree for age from 1 to 5."))
                                 )
                      )
               )
@@ -322,7 +323,8 @@ ui <- dashboardPage(
             div(class = "scale-note",
                 icon("info-circle"),
                 " All plots reflect the country selected in the left panel or side bar.
-                  Hover over the bars in the charts for exact values.")
+                  Hover over the bars in the charts for exact values. 
+                  Be sure to wait a couple of seconds for this page to load properly.")
           )
         ),
         # Outcome variable
@@ -356,7 +358,8 @@ ui <- dashboardPage(
             title = tagList(icon("calculator"), " Regression Analysis"),
             div(class = "scale-note",
                 icon("info-circle"),
-                " OLS regression."),
+                " Shows OLS regression using variable controls and age polynomials selected.
+                  Be sure to wait a couple of seconds for this page to load properly."),
             strong("Current formula:"),
             verbatimTextOutput("formula_display")
           )
