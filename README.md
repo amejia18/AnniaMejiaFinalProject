@@ -1,11 +1,9 @@
 ## European Values Study 2017 Data Explorer
 By using 'AnniaMejiaFinalProject_1.Rmd', this interactive Shiny dashboard could be replicated to browse data from the 2017 European Values Study. 
-This dashboard showcases two variables of interest found in this EVS 2017 data set. 
-The first variable (v72) is concerned with the level of agreement with the statement: 
-* Men should have more right to a job than women when jobs are scarce.*
 
-The second variable (v80) is concerned with the level of agreement with the statement: 
-* Employers should give priority to nationals over immigrants when jobs are scarce.* 
+This dashboard showcases two variables of interest found in the EVS 2017 data set. 
+The first variable (v72) is concerned with the level of agreement with the statement: Men should have more right to a job than women when jobs are scarce.
+The second variable (v80) is concerned with the level of agreement with the statement: Employers should give priority to nationals over immigrants when jobs are scarce.
 
 Looking at these two variables of interest provides valuable information about how these attitudes vary age, sex and education to inform policy making across Europe.
 
@@ -14,9 +12,9 @@ This "European Values Study 2017 Data Explorer" dashboard has three sidebar tabs
 2. Exploration
 3. Regression
 
-Overview: Summarizes the purpose of this dashboard in the 'About this app' section, explains the variables of interest in the 'Variables of interest' section, provides instructions on how to naviate this dashboard in the 'How to navigate' section, and explains the controls on the sidebar in the 'Side Bar Controls' section.
-Exploration: Shows distribution plots for the selected outcome and the three control variables: age, education, sex.
-Regression: Shows OLS coefficient table and residuals vs. fitted plot for chosen model
+1. Overview: Summarizes the purpose of this dashboard in the 'About this app' section, explains the variables of interest in the 'Variables of interest' section, provides instructions on how to naviate this dashboard in the 'How to navigate' section, and explains the controls on the sidebar in the 'Side Bar Controls' section.
+2. Exploration: Shows distribution plots for the selected outcome and the three control variables: age, education, sex.
+3. Regression: Shows OLS coefficient table and residuals vs. fitted plot for chosen model
 
 Link to Dashboard: https://yvwcnk-annia-mejia.shinyapps.io/evs-data-explorer/
 
