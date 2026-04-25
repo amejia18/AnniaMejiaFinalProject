@@ -1,0 +1,254 @@
+---
+title: "AnniaMejiaFinalProject"
+subtitle: "European Values Study 2017 Report"
+author: "Annia Mejia"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+    number_sections: true
+params:
+  country:  "overall"
+  outcome:  "v72"
+  controls: !r character(0)
+  age_poly: 1
+  data:     NULL
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width  = 8,
+  fig.height = 4.5,
+  dpi = 120
+)
+
+library(tidyverse)
+library(broom)
+library(kableExtra)
+```
+
+```{r data-prep}
+load_evs_data <- function(path = "data/evs_data.rds") {
+  if (!file.exists(path)) stop("EVS data file not found. Check the path.")
+  readRDS(path)
+}
+
+filter_data <- function(data, country_input) {
+  if (country_input == "overall") return(data)
+  data %>% filter(country == country_input)
+}
+
+build_formula <- function(outcome, controls, age_poly) {
+  age_term <- if (age_poly == 1) "age" else paste0("poly(age, ", age_poly, ")")
+  rhs      <- paste(c(age_term, controls), collapse = " + ")
+  paste(outcome, "~", rhs)
+}
+
+fit_model <- function(data, outcome, controls, age_poly) {
+  f <- as.formula(build_formula(outcome, controls, age_poly))
+  lm(f, data = data, na.action = na.omit)
+}
+
+outcome_label <- function(v) {
+  switch(v,
+    v72 = "Gender attitude: men's job priority over women (v72)",
+    v80 = "Immigration attitude: nationals' job priority over immigrants (v80)",
+    v
+  )
+}
+
+# Unpack parameters passed from Shiny
+country_param  <- params$country
+outcome_param  <- params$outcome
+controls_param <- if (is.null(params$controls)) character(0) else params$controls
+age_poly_param <- params$age_poly
+
+country_disp  <- if (country_param == "overall") "All countries (overall sample)" else country_param
+formula_str   <- build_formula(outcome_param, controls_param, age_poly_param)
+controls_disp <- if (length(controls_param) == 0) "None" else paste(controls_param, collapse = ", ")
+
+df <- if (!is.null(params$data)) {
+  params$data
+} else {
+  filter_data(load_evs_data(), country_param)
+}
+```
+
+# Overview
+
+This report was generated from the **EVS Data Explorer** Shiny app on `r format(Sys.Date(), "%B %d, %Y")`.
+
+| Parameter | Value |
+|---|---|
+| Country / Sample | `r country_disp` |
+| Outcome variable | `r outcome_label(outcome_param)` |
+| Additional controls | `r controls_disp` |
+| Age polynomial degree | `r age_poly_param` |
+| Regression formula | `r formula_str` |
+
+This report focuses on two variables of interest from the EVS 2017 data set.
+The first variable (**v72**) concerns the level of agreement with the statement
+*Men should have more right to a job than women when jobs are scarce*.
+The second variable (**v80**) concerns the statement
+*Employers should give priority to nationals over immigrants when jobs are scarce*.
+Both are measured on a 1–5 scale (1 = strongly agree, 5 = strongly disagree).
+
+---
+
+# Exploratory Analysis
+
+## Outcome Variable
+
+The chart below shows the distribution of **`r outcome_label(outcome_param)`**
+for `r country_disp`.
+
+```{r plot-outcome, fig.height=3.5}
+col <- if (outcome_param == "v72") "#2166ac" else "#d6604d"
+
+df %>%
+  filter(!is.na(.data[[outcome_param]])) %>%
+  count(value = .data[[outcome_param]]) %>%
+  mutate(
+    pct   = n / sum(n) * 100,
+    label = factor(value, levels = 1:5,
+                   labels = c("1\nStrongly agree", "2", "3", "4",
+                              "5\nStrongly disagree"))
+  ) %>%
+  ggplot(aes(x = label, y = pct)) +
+  geom_col(fill = col, alpha = 0.88, width = 0.7) +
+  geom_text(aes(label = sprintf("%.1f%%", pct)), vjust = -0.4, size = 3.5) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1),
+                     expand = expansion(mult = c(0, 0.12))) +
+  labs(x = outcome_label(outcome_param), y = "% of respondents") +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid.minor = element_blank())
+```
+
+## Predictor Variables
+
+### Age
+
+```{r plot-age, fig.height=3}
+df %>% filter(!is.na(age)) %>%
+  ggplot(aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "#4C6A92", colour = "white", alpha = 0.88) +
+  labs(x = "Age (years)", y = "Count") +
+  theme_minimal(base_size = 12)
+```
+
+**Descriptive statistics for age:**
+
+```{r age-summary}
+df %>%
+  filter(!is.na(age)) %>%
+  summarise(N = n(), Mean = round(mean(age), 2),
+            SD = round(sd(age), 2), Min = min(age), Max = max(age)) %>%
+  kable(caption = "Age descriptive statistics") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE)
+```
+
+### Education Level
+
+```{r plot-edu, fig.height=3}
+df %>% filter(!is.na(edu_f)) %>%
+  count(edu_f) %>%
+  mutate(pct = n / sum(n) * 100) %>%
+  ggplot(aes(x = edu_f, y = pct)) +
+  geom_col(fill = "#4C6A92", alpha = 0.88, width = 0.6) +
+  geom_text(aes(label = sprintf("%.1f%%", pct)), vjust = -0.4, size = 3.5) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1),
+                     expand = expansion(mult = c(0, 0.12))) +
+  labs(x = "Education level", y = "% of respondents") +
+  theme_minimal(base_size = 12)
+```
+
+### Sex
+
+```{r plot-sex, fig.height=3}
+df %>% filter(!is.na(sex_f)) %>%
+  count(sex_f) %>%
+  mutate(pct = n / sum(n) * 100) %>%
+  ggplot(aes(x = sex_f, y = pct)) +
+  geom_col(fill = "#4C6A92", alpha = 0.88, width = 0.5) +
+  geom_text(aes(label = sprintf("%.1f%%", pct)), vjust = -0.4, size = 3.5) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1),
+                     expand = expansion(mult = c(0, 0.12))) +
+  labs(x = "Sex", y = "% of respondents") +
+  theme_minimal(base_size = 12)
+```
+
+---
+
+# Regression Analysis
+
+## Model
+
+The model below uses OLS regression. The formula is:
+
+**`r formula_str`**
+
+```{r fit-model}
+model <- fit_model(df, outcome_param, controls_param, age_poly_param)
+```
+
+## Coefficient Table
+
+```{r reg-table}
+tidy(model, conf.int = TRUE) %>%
+  mutate(
+    across(where(is.numeric), ~ round(.x, 4)),
+    Sig. = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      p.value < 0.1   ~ ".",
+      TRUE            ~ ""
+    )
+  ) %>%
+  rename(Term = term, Estimate = estimate, `Std. Error` = std.error,
+         `t value` = statistic, `p value` = p.value,
+         `CI 2.5%` = conf.low, `CI 97.5%` = conf.high) %>%
+  kable(caption = paste("OLS coefficients —", outcome_label(outcome_param))) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = TRUE) %>%
+  footnote(general = "*** p<0.001  ** p<0.01  * p<0.05  . p<0.1")
+```
+
+```{r model-fit}
+glance(model) %>%
+  select(r.squared, adj.r.squared, sigma, statistic, p.value, nobs) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 4))) %>%
+  rename(`R²` = r.squared, `Adj. R²` = adj.r.squared,
+         `Residual SE` = sigma, `F statistic` = statistic,
+         `p value` = p.value, N = nobs) %>%
+  kable(caption = "Model fit statistics") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE)
+```
+
+## Residuals vs. Fitted Values
+
+```{r plot-resid, fig.height=4.5}
+broom::augment(model) %>%
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.18, colour = "#4C6A92", size = 1.2) +
+  geom_hline(yintercept = 0, colour = "#e74c3c", linewidth = 0.8,
+             linetype = "dashed") +
+  geom_smooth(method = "loess", se = FALSE, colour = "#2C3E50",
+              linewidth = 0.8) +
+  labs(x = "Fitted values", y = "Residuals",
+       title = "Residuals vs. Fitted values") +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid.minor = element_blank())
+```
+
+---
+
+*Report generated by the EVS Data Explorer · `r format(Sys.time(), "%Y-%m-%d %H:%M")`*
