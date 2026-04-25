@@ -5,7 +5,7 @@
 #The first variable (v72) is concerned with the level of agreement with the statement: 
 #Men should have more right to a job than women when jobs are scarce. 
 #The second variable (v80) is concerned with the level of agreement with the statement: 
-#Employers should give priority to nationals over immigrants when jobs are scarce*. 
+#Employers should give priority to nationals over immigrants when jobs are scarce. 
 #Looking at these two variables of interest provides valuable information about 
 #how these attitudes vary age, sex and education to inform policy making across Europe. 
 
@@ -22,7 +22,7 @@ COL_V80 <- "#d6604d"
 COL_BAR <- "#4C6A92"
 
 # Data preparation functions
-load_evs_data <- function(path = "data/evs_data.rds") {
+load_evs_data <- function(path = "data/evs_clean.rds") {
   if (!file.exists(path)) {
     stop("EVS data file not found. Check the path.")
   }
@@ -55,6 +55,9 @@ outcome_label <- function(v) {
 
 
 evs <- load_evs_data()
+
+evs <- evs %>%
+  mutate(country = haven::as_factor(country))
 
 country_choices <- c(
   "Overall (all countries)" = "overall",
@@ -154,6 +157,7 @@ plot_residuals <- function(model) {
 
 
 # UI
+# UI
 ui <- dashboardPage(
   skin = "black",
   
@@ -169,7 +173,7 @@ ui <- dashboardPage(
     sidebarMenu(
       id = "sidebar",
       menuItem("Overview",    tabName = "overview",    icon = icon("home")),
-      menuItem("Exploration", tabName = "exploration", icon = icon("chart-bar")),
+      menuItem("Exploration", tabName = "exploration", icon = icon("search")),
       menuItem("Regression",  tabName = "regression",  icon = icon("calculator"))
     ),
     hr(),
@@ -255,17 +259,16 @@ ui <- dashboardPage(
                        strong("European Values Study (EVS) 2017,"),
                        "a large-scale cross-national survey examining values, beliefs,
                    and attitudes across Europe."),
-                     p("It focuses on two attitudinal outcomes related to gender roles
-                   in the workplace and employment discrimination toward immigrants."),
+                     p("This dashboard uses two variables of interest found in this EVS 2017 data set. The first variable (v72) is concerned with the level of agreement with the statement: Men should have more right to a job than women when jobs are scarce. The second variable (v80) is concerned with the level of agreement with the statement: Employers should give priority to nationals over immigrants when jobs are scarce. Looking at these two variables of interest provides valuable information about how these attitudes vary age, sex and education to inform policy making across Europe."),
                      br(),
                      h4("Variables of interest", class = "intro"),
                      tags$ul(
-                       tags$li(strong("v72 — Gender attitude:"),
-                               " Agreement that men should have more right to a job than women
-                            when jobs are scarce (1 = strongly agree, 5 = strongly disagree)."),
-                       tags$li(strong("v80 — Immigration attitude:"),
-                               " Agreement that employers should give priority to nationals
-                            over immigrants when jobs are scarce (same scale).")
+                       tags$li(strong("v72 (Gender attitude):"),
+                               " This variable shows the level of agreement with the statement: Men                              should have more right to a job than women when jobs are scarce. 
+                            (Variable Values Range: 1 = strongly agree, 5 = strongly                                        disagree)."),
+                       tags$li(strong("v80 (Immigration attitude):"),
+                               " This variable shows the level of agreement with the statement:  Employers should give priority to nationals over immigrants when jobs are scarce.
+                            (Variable Values Range: 1 = strongly agree, 5 = strongly                                        disagree).")
                      ),
                      br(),
                      p(icon("database"), strong(" Data source: "),
@@ -276,28 +279,28 @@ ui <- dashboardPage(
               column(6,
                      h4("How to navigate", class = "intro"),
                      tags$ul(
-                       tags$li(icon("home"),       strong(" Overview (this page):"),
-                               " Purpose of the app and variable descriptions."),
-                       tags$li(icon("chart-bar"),  strong(" Exploration:"),
-                               " Distribution plots for the selected outcome and the
-                            three control variables (age, education, sex)."),
+                       tags$li(icon("home"),       strong(" Overview:"),
+                               " Summarizes the purpose of this dashboard in the 'About this app' section, explains the variables of interest in the 'Variables of interest' section, provides instructions on how to naviate this dashboard in the 'How to navigate' section, and explains the controls on the sidebar in the 'Side Bar Controls' section."),
+                       tags$li(icon("search"),  strong(" Exploration:"),
+                               " Provides distribution plots for the selected outcome and the
+                            three control variables: age, education, sex."),
                        tags$li(icon("calculator"), strong(" Regression:"),
                                " OLS coefficient table and residuals vs. fitted plot
                             for your chosen model.")
                      ),
                      br(),
-                     h4("Controls (left panel)", class = "intro"),
+                     h4("Side Bar Controls", class = "intro"),
                      tags$table(class = "table table-bordered table-condensed",
-                                tags$thead(tags$tr(tags$th("Input"), tags$th("Effect"))),
+                                tags$thead(tags$tr(tags$th("Input"), tags$th("Output"))),
                                 tags$tbody(
                                   tags$tr(tags$td(icon("globe"),       " Country"),
-                                          tags$td("Filter all outputs to one country, or keep 'Overall'.")),
+                                          tags$td("Filter all outputs to one country, or keep 'Overall (all countries)'.")),
                                   tags$tr(tags$td(icon("bullseye"),    " Outcome"),
                                           tags$td("Switch between v72 and v80 across all tabs.")),
                                   tags$tr(tags$td(icon("sliders-h"),   " Controls"),
                                           tags$td("Add sex and/or education to the regression.")),
                                   tags$tr(tags$td(icon("superscript"), " Age poly."),
-                                          tags$td("Set polynomial degree for age (1–5)."))
+                                          tags$td("Set polynomial degree for age from 1 to 5)."))
                                 )
                      )
               )
@@ -312,11 +315,11 @@ ui <- dashboardPage(
         fluidRow(
           box(
             width = 12, status = "primary", solidHeader = TRUE,
-            title = tagList(icon("chart-bar"), " Exploratory Analysis"),
+            title = tagList(icon("search"), " Exploratory Analysis"),
             div(class = "scale-note",
                 icon("info-circle"),
-                " All plots reflect the country selected in the left panel.
-                  Hover over bars for exact values.")
+                " All plots reflect the country selected in the left panel or side bar.
+                  Hover over the bars in the charts for exact values.")
           )
         ),
         # Outcome variable
@@ -375,7 +378,6 @@ ui <- dashboardPage(
     )
   )
 )
-
 
 #SERVER
 server <- function(input, output, session) {
