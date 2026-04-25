@@ -18,7 +18,7 @@ This dashboard also allows for the generation of reports. An example of the repo
 
 ## Replicating This Dashboard
 1. The full code that was used to create this shinyapp can be reviewed using 'AnniaMejiaFinalProject_1.Rmd'.
-2. To replicate this application, make sure to run the chunk below which requires the following files: "app.R", "evs_clean.rds", and "dynamic_report.Rmd" after running the chunks in the 'AnniaMejiaFinalProject_1.Rmd' file. Some personalized modifications may be required. You must also create an account on www.shinyapps.io.
+2. To replicate this application, make sure to run the chunk below which requires the following files: "app.R", "evs_clean.rds", and "dynamic_report.Rmd". You must also create an account on www.shinyapps.io.
 
  ```{r connect-to-shiny}
 rsconnect::deployApp(
