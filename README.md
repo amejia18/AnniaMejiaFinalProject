@@ -12,9 +12,9 @@ This "European Values Study 2017 Data Explorer" dashboard has three sidebar tabs
 2. Exploration: Shows distribution plots for the selected outcome and the three control variables: age, education, sex.
 3. Regression: Shows OLS coefficient table and residuals vs. fitted plot for chosen model
 
-Link to Dashboard: https://yvwcnk-annia-mejia.shinyapps.io/evs-data-explorer/
+Here is a link to the dashboard: https://yvwcnk-annia-mejia.shinyapps.io/evs-data-explorer/
 
-This Dashboard allows for the generation of reports. An example of the report for Austria is saved in this repository as: evs_report_Austria_2026-04-25.html.
+This Dashboard also allows for the generation of reports. An example of the report for Austria is saved in this repository as: evs_report_Austria_2026-04-25.html.
 
 ## Replicating This Dashboard
 1. The full code that was used to create this shinyapp can be reviewed using 'AnniaMejiaFinalProject_1.Rmd'.
