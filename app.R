@@ -220,32 +220,36 @@ ui <- dashboardPage(
   ),
   
   # Body
-  dashboardBody(
+    dashboardBody(
+      tags$head(tags$style(HTML("
+    .content-wrapper { background-color: #F5F7FA; }
+    .box { border-radius: 8px; border: none;
+           box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
+           overflow: hidden; } /* NEW: Prevents content bleed */
     
-    tags$head(tags$style(HTML("
-      .content-wrapper { background-color: #F5F7FA; }
-      .box { border-radius: 8px; border: none;
-             box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-      .box.box-primary > .box-header {
-        background-color: #4C6A92 !important; color: white;
-        border-radius: 8px 8px 0 0;
-      }
-      .box.box-info > .box-header {
-        background-color: #6C7A89 !important; color: white;
-      }
-      .box.box-warning > .box-header {
-        background-color: #A7B6C2 !important; color: #2C3E50;
-      }
-      .box.box-success > .box-header {
-        background-color: #8FA998 !important; color: #2C3E50;
-      }
-      .dataTables_wrapper { font-size: 13px; }
-      h4.intro { color: #4C6A92; border-bottom: 2px solid #D6DEE6;
-                 padding-bottom: 6px; }
-      .scale-note { background: #EEF3F7; border-left: 4px solid #4C6A92;
-                    padding: 10px 14px; border-radius: 4px;
-                    margin-bottom: 12px; font-size: 13px; }
-    "))),
+    .js-plotly-plot, .plotly { width: 100% !important; } /* Forces plotly resize */
+    .box-body { padding: 10px; overflow: hidden; }      /* Extra containment */
+
+    .box.box-primary > .box-header {
+      background-color: #4C6A92 !important; color: white;
+      border-radius: 8px 8px 0 0;
+    }
+    .box.box-info > .box-header {
+      background-color: #6C7A89 !important; color: white;
+    }
+    .box.box-warning > .box-header {
+      background-color: #A7B6C2 !important; color: #2C3E50;
+    }
+    .box.box-success > .box-header {
+      background-color: #8FA998 !important; color: #2C3E50;
+    }
+    .dataTables_wrapper { font-size: 13px; }
+    h4.intro { color: #4C6A92; border-bottom: 2px solid #D6DEE6;
+               padding-bottom: 6px; }
+    .scale-note { background: #EEF3F7; border-left: 4px solid #4C6A92;
+                  padding: 10px 14px; border-radius: 4px;
+                  margin-bottom: 12px; font-size: 13px; }
+  "))),
     
     tabItems(
       

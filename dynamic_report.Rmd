@@ -3,13 +3,21 @@ title: "European Values Study 2017 Report"
 subtitle: "Dynamic Report for SURV675 Final Project"
 author: "Annia Mejia"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    theme: journal
+    highlight: tango
 params:
   country: NA
   outcome: NA
   controls: NA
   age_poly: NA
   data: NA
----   
+---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -86,9 +94,9 @@ This report was generated from the **EVS Data Explorer** Shiny app on `r format(
 | Age polynomial degree | `r age_poly_param` |
 | Regression formula | `r formula_str` |
 
-This report uses two variables of interest found in this EVS 2017 data set. The first variable (v72) is concerned with the level of agreement with the statement: * Men should have more right to a job than women when jobs are scarce.*
+This report uses two variables of interest found in this EVS 2017 data set. The first variable (v72) is concerned with the level of agreement with the statement: Men should have more right to a job than women when jobs are scarce.
 
-The second variable (v80) is concerned with the level of agreement with the statement: * Employers should give priority to nationals over immigrants when jobs are scarce.* 
+The second variable (v80) is concerned with the level of agreement with the statement:Employers should give priority to nationals over immigrants when jobs are scarce.
 
 Looking at these two variables of interest provides valuable information about how these attitudes vary age, sex and education to inform policy making across Europe.
 

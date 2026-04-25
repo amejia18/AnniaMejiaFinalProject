@@ -15,7 +15,7 @@ This "European Values Study 2017 Data Explorer" dashboard has three sidebar tabs
 Here is a link to the dashboard: https://yvwcnk-annia-mejia.shinyapps.io/evs-data-explorer/
 
 This dashboard also allows for the generation of reports. 
-An example of the report for Austria is saved in this repository as: evs_report_Austria_2026-04-25.html. 
+An example of the report for Armenia is saved in this repository as: evs_report_Armenia_2026-04-25.html. 
 Please download the file to view properly. 
 
 ## Replicating This Dashboard
