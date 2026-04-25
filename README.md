@@ -14,12 +14,11 @@ This "European Values Study 2017 Data Explorer" dashboard has three sidebar tabs
 
 Here is a link to the dashboard: https://yvwcnk-annia-mejia.shinyapps.io/evs-data-explorer/
 
-This Dashboard also allows for the generation of reports. An example of the report for Austria is saved in this repository as: evs_report_Austria_2026-04-25.html.
+This dashboard also allows for the generation of reports. An example of the report for Austria is saved in this repository as: evs_report_Austria_2026-04-25.html.
 
 ## Replicating This Dashboard
 1. The full code that was used to create this shinyapp can be reviewed using 'AnniaMejiaFinalProject_1.Rmd'.
-2. To replicate this application, use the chunk below which requires the following files: "app.R", "evs_clean.rds", and "dynamic_report.Rmd". 
-   You must also create an account on www.shinyapps.io.
+2. To replicate this application, make sure to run the chunk below which requires the following files: "app.R", "evs_clean.rds", and "dynamic_report.Rmd" after running the chunks in the 'AnniaMejiaFinalProject_1.Rmd' file. Some personalized modifications may be required. You must also create an account on www.shinyapps.io.
 
  ```{r connect-to-shiny}
 rsconnect::deployApp(
