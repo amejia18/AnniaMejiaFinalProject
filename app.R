@@ -1,5 +1,5 @@
 #This app.R file is used to publish the rShiny dashboard for the
-#European Values Study 2017 Data Explorer that created by Annia Mejia on April 25, 2026.
+#European Values Study 2017 Data Explorer that was created by Annia Mejia on April 25, 2026.
 
 #This dashboard uses two variables of interest found in this EVS 2017 data set. 
 #The first variable (v72) is concerned with the level of agreement with the statement: 
@@ -56,9 +56,9 @@ outcome_label <- function(v) {
 
 
 evs <- load_evs_data()
-
 evs <- evs %>%
   mutate(country = haven::as_factor(country))
+
 
 country_choices <- c(
   "Overall (all countries)" = "overall",
@@ -192,7 +192,7 @@ ui <- dashboardPage(
                      ),
                      selected = "v72"),
         
-        # REGRESSION-ONLY CONTROLS
+        # Regression Only Controls
         # These only appear when the "Regression" tab is active
         conditionalPanel(
           condition = "input.sidebar == 'regression'",
