@@ -22,7 +22,7 @@ COL_V80 <- "#d6604d"
 COL_BAR <- "#4C6A92"
 
 # Data preparation functions
-load_evs_data <- function(path = "data/evs_clean.rds") {
+load_evs_data <- function(path = "evs_clean.rds") {
   if (!file.exists(path)) {
     stop("EVS data file not found. Check the path.")
   }
