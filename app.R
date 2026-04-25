@@ -157,7 +157,6 @@ plot_residuals <- function(model) {
 
 
 # UI
-# UI
 ui <- dashboardPage(
   skin = "black",
   
@@ -171,7 +170,7 @@ ui <- dashboardPage(
   dashboardSidebar(
     width = 230,
     sidebarMenu(
-      id = "sidebar",
+      id = "sidebar", 
       menuItem("Overview",    tabName = "overview",    icon = icon("home")),
       menuItem("Exploration", tabName = "exploration", icon = icon("search")),
       menuItem("Regression",  tabName = "regression",  icon = icon("calculator"))
@@ -179,12 +178,12 @@ ui <- dashboardPage(
     hr(),
     div(style = "padding: 0 15px;",
         
-        # Country
+        # Country (Visible on all tabs)
         selectInput("country", label = tags$span(icon("globe"), " Country"),
                     choices  = country_choices,
                     selected = "overall"),
         
-        # Outcome
+        # Outcome (Visible on all tabs)
         radioButtons("outcome", label = tags$span(icon("bullseye"), " Outcome variable"),
                      choices = c(
                        "Gender attitude (v72)"      = "v72",
@@ -192,24 +191,28 @@ ui <- dashboardPage(
                      ),
                      selected = "v72"),
         
-        # Controls
-        checkboxGroupInput("controls",
-                           label = tags$span(icon("sliders-h"), " Additional controls"),
-                           choices  = c("Sex"       = "sex_f",
-                                        "Education" = "edu_f"),
-                           selected = NULL),
-        
-        # Age polynomial
-        numericInput("age_poly",
-                     label = tags$span(icon("superscript"), " Age polynomial degree"),
-                     value = 1, min = 1, max = 5, step = 1),
+        # REGRESSION-ONLY CONTROLS
+        # These only appear when the "Regression" tab is active
+        conditionalPanel(
+          condition = "input.sidebar == 'regression'",
+          hr(),
+          checkboxGroupInput("controls",
+                             label = tags$span(icon("sliders-h"), " Additional controls"),
+                             choices  = c("Sex"       = "sex_f",
+                                          "Education" = "edu_f"),
+                             selected = NULL),
+          
+          numericInput("age_poly",
+                       label = tags$span(icon("superscript"), " Age polynomial degree"),
+                       value = 1, min = 1, max = 5, step = 1)
+        ),
         
         hr(),
         
         # Download report button
         div(style = "padding: 0 5px;",
             downloadButton("download_report", "Generate HTML Report",
-                           style = "width:100%; background-color:#4C6A92;
+                           style = "width:100%; background-color:#4C6A92; 
                                   color:white; border:none; border-radius:4px;")
         )
     )

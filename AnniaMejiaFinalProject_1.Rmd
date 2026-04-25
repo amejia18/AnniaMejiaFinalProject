@@ -32,6 +32,7 @@ library(kableExtra)
 library(shiny)
 library(shinydashboard)
 library(DT)
+library(rsconnect)
 ```
 
 ```{r data prep}
@@ -222,7 +223,7 @@ ui <- dashboardPage(
   dashboardSidebar(
     width = 230,
     sidebarMenu(
-      id = "sidebar", # This ID is used by conditionalPanel
+      id = "sidebar", 
       menuItem("Overview",    tabName = "overview",    icon = icon("home")),
       menuItem("Exploration", tabName = "exploration", icon = icon("search")),
       menuItem("Regression",  tabName = "regression",  icon = icon("calculator"))
@@ -556,19 +557,12 @@ shinyApp(ui = ui, server = server)
 sessionInfo()
 ```
 
-```{r connect-to-shiny}
+```{r connect-to-shiny, eval=FALSE, include=FALSE}
 ## Run this chunk to produce the rshiny app 
-   rsconnect::setAccountInfo(name="yvwcnk-annia-mejia",
-			  token="C983398201AD1BB033DCFEC5E9233543",
-			  secret="7zi/oX67CqWut9t7/vGr1+8cU373VwTsWW1MBrwo")
-
-   # Set working directory 
-setwd("C:/Users/amejia.STATISTICS/OneDrive - Statistical Institute of Belize/Desktop/UMD/SURV675/AnniaMejiaFinalProject")
-
-# Then deploy using relative path
 rsconnect::deployApp(
-  appDir = getwd(),
-  appFiles = c("app.R", "evs_clean.rds"),
-  appName = "evs-data-explorer"
+  appDir   = ".", 
+  appFiles = c("app.R", "evs_clean.rds"), 
+  appName  = "evs-data-explorer",
+  forceUpdate = TRUE
 )
 ```
